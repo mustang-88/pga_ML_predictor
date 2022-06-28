@@ -826,11 +826,7 @@ add_ons = add_ons.replace(0, col_means)
 
 add_ons = add_ons.groupby("PLAYER NAME", as_index = True).mean()
 
-#fc = pd.merge(fc,ten, on = ['PLAYER NAME'],how = 'inner')
-#fc = pd.merge(fc,win, on = ['PLAYER NAME'],how = 'inner')
-#fc = pd.merge(fc,add_ons, on = ['PLAYER NAME'],how = 'inner')
 
-#raw = pd.read_csv(r"/Users/John/Downloads/RAW PGA Histrorical.csv",index_col = ['tournament name','player'])
 raw = pd.read_csv(r"/Users/John/Downloads/RAW PGA Histrorical.csv")
 raw.rename(columns = {'player':'PLAYER NAME'}, inplace = True )
 
@@ -847,79 +843,12 @@ df = pd.merge(raw,weather, on = ['PLAYER NAME', 'tournament name','pos','date'],
 df = (df.pivot_table(index = ['PLAYER NAME','tournament name','pos','date']))
 
 
-
-# identify the number of top 5s per location
-#df['t5s'] = raw[raw['pos'] <=5].value_counts(['PLAYER NAME','tournament name'])
-
 # identify the number of top 10s per location
 df['loc t10s'] = raw[raw['pos'] <=10].value_counts(['PLAYER NAME','tournament name'])
-
-# identify the number of top 15s per location
-#df['t15s'] = raw[raw['pos'] <=15].value_counts(['PLAYER NAME','tournament name']) - df['t5s'] - df['t10s']
 
 # identify the number of top 20s per location
 df['loc t20s'] = (raw[raw['pos'] <=20].value_counts(['PLAYER NAME','tournament name']) - df['loc t10s'])
 
-# add weighted averages 
-
-#df['loc t10s'] = df['loc t10s'] #* 3
-#df['loc t20s'] = df['loc t20s'] #* 1.25
-
-# identify the number of top 10s per location
-df['loc wins'] = raw[raw['pos'] ==1].value_counts(['PLAYER NAME','tournament name']) #* 2
-
-# identify number of times played at each course
-df['loc plays'] = raw[['PLAYER NAME','tournament name']].value_counts()
-
-#count of times cut from tournament
-df['loc miss_cut'] = raw[raw['pos'] >=50].value_counts(['PLAYER NAME','tournament name']) * -1
-
-# identify the number of ranks beyond 20
-df['loc miss_20'] = (raw[raw['pos'] >20].value_counts(['PLAYER NAME', 'tournament name']) *-1) #*2.5
-
-# Wins per year
-# Top 10s per year
-
-
-
-#likeliness of winning per prev performance
-
-df["%_1st"] = raw[raw['pos'] ==1].value_counts(['PLAYER NAME','tournament name']) / df['loc plays']
-
-df["%_T10"] = ((raw[raw['pos'] <=10].value_counts(['PLAYER NAME','tournament name'])) / df['loc plays']) *.5
-
-df["%_T20"] =  (((raw[raw['pos'] <=20].value_counts(['PLAYER NAME','tournament name']) - df['loc t10s'])) / df['loc plays'])  *.25
-
-df["%_DQ"] = (raw[raw['pos'] >20].value_counts(['PLAYER NAME', 'tournament name']) / df['loc plays']) *-1
-
-# identify the number of ranks below 15
-#df['m_15'] = (raw[raw['pos'] >15].value_counts(['PLAYER NAME', 'tournament name']) * -1) - df['m_20']
-
-# identify the number of ranks below 20
-#df['m_10'] = (raw[raw['pos'] >10].value_counts(['PLAYER NAME', 'tournament name']) * -1) - df['m_15'] - df['m_20']
-
-# identify the number of ranks below 20
-#df['m_5'] = (raw[raw['pos'] >5].value_counts(['PLAYER NAME', 'tournament name']) * -1) - df['m_10'] - df['m_15'] - df['m_20']
-
-
-# need to create a column for cuts
-
-
-
-# penalty for missed plays
-# need to calcualte count of tournaments per loc within the last 7 years
-# current formula below is temporary
-df['opt_in/outs'] = (df['loc plays'] - 7) #*.25
-
-#df['m2']= raw[raw['pos'] ==0].value_counts(['PLAYER NAME', 'tournament name']) * -1
-
-# Remove all the NaN fields
-df = df.fillna(0)
-#df.sort_values(by = 'm2', ascending = False).head()
-#df = df.drop(['year'],axis = 1)
-#df.sort_values(by = 'opt_in/outs',ascending= False).head()
-
-#df['m2']= raw[raw['pos'] ==0].value_counts(['PLAYER NAME', 'tournament name']) * -1
 
 # Remove all the NaN fields
 df = df.fillna(0)
